@@ -8,12 +8,16 @@ const db=require('./config/Database');
 const {hashPassword,validatePassword}=require('./utils/bcrypt');
 const authenticateToken=require('./middlewares/auth');
 const checkParameter=require('./middlewares/zod')
+const ws=require('ws');
 const app = express();
+//const cors=require('cors');
+const cookie=require('cookie');
 const port = 3000;
 
 const JWT_SECRET=process.env.SECRET_KEY;
 
 app.use(bodyParser.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -52,6 +56,7 @@ app.post('/logIn', async (req, res, next) => {
     }
 
     const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict', maxAge: 3600000 });
 
     res.status(200).json({ message: 'Logged in successfully', token });
   } catch (error) {
@@ -105,6 +110,21 @@ app.use((error, req, res, next) => {
 });
 
 //start server
-app.listen(port, () => {
+let x=app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+const wss = new ws.WebSocketServer({ server: x });
+
+wss.on('connection', function connection(ws) {
+  authenticateToken();
+    ws.on('message', function message(data, isBinary) {
+      wss.clients.forEach((client) => {
+       if (client !== ws && client.readyState === ws.OPEN) {
+         client.send(data, { binary: isBinary });
+       }
+      });
+    });
+
+    ws.send("Hello message from server");
+});

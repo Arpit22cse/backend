@@ -1,9 +1,10 @@
 require('dotenv').config();
 const JWT_SECRET=process.env.SECRET_KEY;
 const jwt=require('jsonwebtoken');
+const cookie=require('cookie')
 function authenticateToken(req, res, next) {
     try {
-      const token = req.headers["authorization"]?.split(" ")[1];
+      const token = req.cookies?.token;
   
       if (!token) {
         return res.status(401).json({ message: "Token required" });
@@ -18,7 +19,7 @@ function authenticateToken(req, res, next) {
         next();
       });
     } catch (error) {
-      next(error);
+      return error;
     }
   }
 module.exports=authenticateToken;
