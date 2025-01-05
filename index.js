@@ -10,14 +10,12 @@ const authenticateToken=require('./middlewares/auth');
 const checkParameter=require('./middlewares/zod')
 const ws=require('ws');
 const app = express();
-//const cors=require('cors');
 const cookie=require('cookie');
 const port = 3000;
 
 const JWT_SECRET=process.env.SECRET_KEY;
 
 app.use(bodyParser.json());
-app.use(cors());
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
