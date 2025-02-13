@@ -19,6 +19,10 @@ const userSchema=mongoose.Schema({
         type: Date,
         default: Date.now,
       },
+      Admin:{
+        type:Boolean,
+        default:false,
+      },
       todos:[{type:mongoose.Schema.ObjectId,ref:'Task'}]
 });
 const User=new mongoose.model('User',userSchema);
