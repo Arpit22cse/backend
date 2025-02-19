@@ -9,7 +9,7 @@ const JWT_SECRET=process.env.SECRET_KEY;
 
 
 
-router.post('/',limiter, async (req, res, next) => {
+router.post('/', async (req, res, next) => {
     try {
       const { email, password } = req.body;
       //console.log(req.body);
