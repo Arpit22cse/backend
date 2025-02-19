@@ -34,7 +34,7 @@ const port = 3000;
 const JWT_SECRET=process.env.SECRET_KEY;
 
 
-app.set('trust proxy', true);
+//app.set('trust proxy', true);
 app.use(bodyParser.json({limit:'10mb'}));
 app.use(cors());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

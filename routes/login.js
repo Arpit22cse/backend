@@ -1,7 +1,7 @@
 const express=require('express');
 const router =express.Router();
 const db=require('../config/Database');
-const validatePassword=require('../utils/bcrypt');
+const { validatePassword } = require('../utils/bcrypt');
 const jwt=require('jsonwebtoken');
 require('dotenv').config();
 const limiter=require('../middlewares/ratelimiter');
