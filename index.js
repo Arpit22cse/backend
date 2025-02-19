@@ -18,7 +18,7 @@ const ws=require('ws');
 
 
 const {hashPassword,validatePassword}=require('./utils/bcrypt');
-const authenticateToken=require('./middlewares/auth');
+const authenticateToken=require('./middlewares/authenticateToken');
 const checkParameter=require('./middlewares/zod');
 const transporter=require('./utils/nodemailer');
 
@@ -34,7 +34,7 @@ const port = 3000;
 const JWT_SECRET=process.env.SECRET_KEY;
 
 
-
+app.set('trust proxy', true);
 app.use(bodyParser.json({limit:'10mb'}));
 app.use(cors());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -59,47 +59,18 @@ app.get('/', (req, res) => {
 
 
 
+const login=require('./routes/login');
+app.use('/logIn',login);
 
-app.post('/signIn', checkParameter, async (req, res, next) => {
-  try {
-    const hashedPassword = await hashPassword(req.body.password);
-    const userData={name:req.body.name , email:req.body.email , password:hashedPassword};
-    const user = new User(userData);
+const signIn=require('./routes/signIn');
+app.use('/signIn',signIn);
 
-    user.save();
+const getTodos = require('./routes/getTodos');
+app.use('/getTodos',authenticateToken, getTodos);
 
-    res.status(201).json({ message: 'User created successfully' });
-  } catch (error) {
-    next(error);
-  }
-});
+const getItems = require('./routes/getItems');
+app.use('/getItems', getItems);
 
-
-
-app.post('/logIn',limiter, async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    //console.log(req.body);
-    const user = await db.collection('users').findOne({ email });
-
-    if (!user) {
-      return res.status(401).json({ message: 'User not found' });
-    }
-
-    const isValid = await validatePassword(password, user.password);
-
-    if (!isValid) {
-      return res.status(401).json({ message: 'Invalid password' });
-    }
-
-    const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
-    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict', maxAge: 3600000 });
-
-    res.status(200).json({ message: 'Logged in successfully', token });
-  } catch (error) {
-    next(error);
-  }
-});
 
 
 app.post("/sendMail",async(req,res)=>{
@@ -122,82 +93,6 @@ transporter.sendMail(mailOptions, (error, info) => {
 })
 
 
-
-app.post('/addTask', authenticateToken, async (req, res, next) => {
-  try {
-
-    const result = await db.collection('users').findOne({ email: req.user.email });
-
-    const taskData={
-      title:req.body.title,
-      description:req.body.description,
-      user:result._id,
-    }
-
-    const task=new Task(taskData);
-    const saveTask = await task.save();
-
-    const saveUser=await db.collection('users').updateOne({_id:result._id},{$push:{todos:saveTask._id}});
-
-    if (saveUser.modifiedCount === 1) {
-      res.status(200).json({ message: 'Task added successfully' });
-    } else {
-      res.status(404).json({ message: 'User not found or task not added' });
-    }
-  } catch (error) {
-    next(error);
-  }
-});
-
-
-
-app.post("/addItem", authenticateToken, async(req,res,next)=>{
-  try {
-    const itemData={
-      itemId: crypto.createHash,
-      name: req.body.name,
-      price: req.body.price,
-      description: req.body.description,
-      image: req.body.imageData,
-      category: req.body.category,
-      stock: 50
-    }
-
-    const item=new Item(itemData);
-    const itemSave = await item.save();
-    //console.log(req.body);
-
-    res.status(200).json({message:"Item added successfully"});
-    
-  } catch (error) {
-    next(error);
-  }
-});
-
-
-app.get("/getItems",  async (req,res,next) => {
-
-  try{
-    const items = await Item.find().exec();
-    res.status(200).json({ items });
-  }catch (error) {
-    next(error);
-  }
-
-})
-
-app.get('/getTodos', authenticateToken, async (req, res, next) => {
-  try {
-    const user=await db.collection('users').findOne({email:req.user.email});
-    const todos=await db.collection('tasks').find({ user: user._id }).toArray();
-    res.status(200).json({todos:todos});
-  } catch (error) {
-    next(error);
-  }
-
-
-
-})
 
 
 
