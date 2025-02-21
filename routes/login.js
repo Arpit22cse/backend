@@ -4,7 +4,6 @@ const db=require('../config/Database');
 const { validatePassword } = require('../utils/bcrypt');
 const jwt=require('jsonwebtoken');
 require('dotenv').config();
-const limiter=require('../middlewares/ratelimiter');
 const JWT_SECRET=process.env.SECRET_KEY;
 
 
