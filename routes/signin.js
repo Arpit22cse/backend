@@ -5,7 +5,7 @@ const express=require('express');
 const checkParameter=require('../middlewares/zod')
 const router =express.Router();
 const jwt=require('jsonwebtoken')
-const { v4: uuidv4 } = require('uuid');
+const nanoid=require('nanoid');
 const JWT_SECRET=process.env.SECRET_KEY;
 
 router.post('/', checkParameter, async (req, res, next) => {
@@ -14,7 +14,7 @@ router.post('/', checkParameter, async (req, res, next) => {
       const userData={username:req.body.username , email:req.body.email , password:hashedPassword};
       const user = new User(userData);
       const email=req.body.email;
-      const id = uuidv4();
+      const id = nanoid();
   
       user.save();
 

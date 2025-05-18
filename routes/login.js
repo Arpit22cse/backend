@@ -3,7 +3,7 @@ const router =express.Router();
 const db=require('../config/Database');
 const { validatePassword } = require('../utils/bcrypt');
 const jwt=require('jsonwebtoken');
-const { v4: uuidv4 } = require('uuid');
+const { nanoid } = require('nanoid');
 require('dotenv').config();
 
 const JWT_SECRET=process.env.SECRET_KEY;
@@ -30,7 +30,7 @@ router.post('/', async (req, res, next) => {
         return res.status(401).json({ message: 'Invalid password' });
       }
 
-      const id = uuidv4();
+      const id = nanoid();
       const makeUser={email: user.email, id, username: user.username,};
   
       const token = jwt.sign({email: user.email, id, username: user.username}, JWT_SECRET, { expiresIn: '1h' });
