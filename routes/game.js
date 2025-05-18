@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid');
+const { nanoid } = require('nanoid');
 const authenticateToken = require('../middlewares/authenticateToken');
 
  // roomId -> { id, name, players: [] }
@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
 
 router.post('/',(req, res) => {
   const { name } = req.body;
-  const id = uuidv4();
+  const id = nanoid();
 
   const newRoom = {
     id,
