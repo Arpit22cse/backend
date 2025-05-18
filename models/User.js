@@ -2,7 +2,7 @@ const mongoose=require('mongoose');
 const zod=require('zod');
 
 const userSchema=mongoose.Schema({
-    name: {
+    username: {
         type: String,
         required: true,
       },
