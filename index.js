@@ -26,7 +26,7 @@ const transporter=require('./utils/nodemailer');
 
 const app = express();
 app.use(cors({
-    origin: 'http://localhost:5173', // Specify your frontend origin
+    origin: 'https://tic-tac-toe-kappa-one-80.vercel.app', // Specify your frontend origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true // Allow credentials
