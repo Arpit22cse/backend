@@ -87,6 +87,7 @@ app.post("/sendMail",async(req,res)=>{
     to: 'arpit.khandelwal2022@glbajajgroup.org', // List of recipients
     subject: 'Hello from Nodemailer', // Subject line
     text: 'This is a plain text message.', // Plain text body
+    text: req.data,
     html: '<h1>This is an HTML message</h1>' // HTML body
 };
 
