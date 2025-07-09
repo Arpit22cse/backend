@@ -26,7 +26,7 @@ const transporter=require('./utils/nodemailer');
 
 const app = express();
 app.use(cors({
-    origin: 'https://tic-tac-toe-kappa-one-80.vercel.app', // Specify your frontend origin
+    origin: 'https://portfolio-umber-mu-89.vercel.app', // Specify your frontend origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true // Allow credentials
@@ -82,23 +82,34 @@ app.use('/auth',aut);
 
 
 app.post("/sendMail",async(req,res)=>{
+  
+  const { message, email, name, subject} = req.body;
+
   const mailOptions = {
     from: process.env.COMPANY_MAIL, // Sender address
     to: 'arpit.khandelwal2022@glbajajgroup.org', // List of recipients
     subject: 'Hello from Nodemailer', // Subject line
-    text: 'This is a plain text message.', // Plain text body
-    text: req.data,
-    html: '<h1>This is an HTML message</h1>' // HTML body
-};
+    text: 'This is a plain text message.', // Plain text body      
+    html: `
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message}</p>
+      `,
+
+  };
 
 // Send the email
 transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-        console.error('Error sending email:', error);
-    } else {
-        console.log('Email sent successfully:', info.response);
-    }
+  if (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ success: false, message: 'Failed to send email', error: error.toString() });
+  } else {
+    res.status(200).json({ success: true, message: 'Email sent successfully' });
+  }
 });
+
 })
 
 
