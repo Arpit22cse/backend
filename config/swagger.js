@@ -8,9 +8,9 @@ const swaggerDefinition = {
       version: '1.0.0',
       description: 'A simple Express API',
     },
-    host: 'localhost:3000',
+    host: 'https://backend-6qxr.onrender.com/',
     basePath: '/', // Base path for Swagger 2.0
-    schemes: ['http'], // HTTP/HTTPS schemes
+    schemes: ['https'], // HTTP/HTTPS schemes
   };
   
   // Swagger Options
